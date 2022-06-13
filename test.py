@@ -161,6 +161,49 @@ def validator_test():
         # loc: (field_name, index)
 
 
+def config_test():
+    class Model(BaseModel):
+        name: str
+        age: int
+
+        class Config:
+            schema_extra = {
+                'example': {
+                    'name': 'python',
+                    'age': 15
+                }
+            }
+            
+    schema = Model.schema().get('example', None)
+    """
+    {
+        "title":"Model",
+        "type":"object",
+        "properties":{
+            "name":{
+                "title":"Name",
+                "type":"string"
+            },
+            "age":{
+                "title":"Age",
+                "type":"integer"
+            }
+        },
+        "required":[
+            "name",
+            "age"
+        ],
+        "example":{
+            "name":"python",
+            "age":15
+        }
+    }
+    """
+
+    assert 'python' == schema.get('name', None)
+    assert 15 == schema.get('age', None)
+
+
 if __name__ == '__main__':
     construct_test()
     field_ordering_test()
@@ -168,3 +211,4 @@ if __name__ == '__main__':
     private_attr_test()
     parse_obj_as_test()
     validator_test()
+    config_test()
